@@ -27,21 +27,8 @@
           "domains" : ".{{ security_options.realm|lower }},{{ security_options.realm|lower }}",
           "manage_krb5_conf" : "true"
       }
-    },
-{% endif %}
-    {
-      "ams-grafana-env" : {
-        "metrics_grafana_username" : "{{ ambari['grafana_user'] }}",
-        "metrics_grafana_password" : "{{ ambari['grafana_pass'] }}"
-      }
-    },
-    {
-      "ams-grafana-ini" : {
-        "properties" : {
-          "port" : "4000"
-         }
-      }
     }
+{% endif %}
   ],
 
   "host_groups" : [
@@ -52,9 +39,6 @@
         },
         {
           "name" : "HIVE_SERVER"
-        },
-        {
-          "name" : "METRICS_MONITOR"
         },
         {
           "name" : "HIVE_METASTORE"
@@ -75,12 +59,6 @@
 {% endif %}
         {
           "name" : "SECONDARY_NAMENODE"
-        },
-        {
-          "name" : "METRICS_COLLECTOR"
-        },
-        {
-          "name" : "METRICS_GRAFANA"
         },
         {
           "name" : "YARN_CLIENT"
