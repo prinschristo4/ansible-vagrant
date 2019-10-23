@@ -15,7 +15,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "centos/7"
   config.vm.hostname = "vagrant.localdomain"
-  config.vm.network "public_network"
   config.vm.provision "shell", inline: $initscript
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "8192"
