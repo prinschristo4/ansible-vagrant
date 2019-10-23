@@ -1,15 +1,15 @@
 #Script to be executed
 $initscript = <<SCRIPT
-yum install git ansible -y
-git clone #Reponame
-push repo
-yum localinstall jdk
-#Check for the first Run
-if [ -f filename ]; then
-	ansible-playbook exec
-else
-	ansible-playbook other playbook
+if [ ! -f /root/provisioner ]; then
+	yum install git ansible -y
+	curl -O https://data-viewer-setup.s3.amazonaws.com/jdk-8u161-linux-x64.rpm
+	yum localinstall jdk-8u161-linux-x64.rpm
+	git clone https://github.com/saikrishnavedaraju/ansible-vagrant.git
+	pushd ansible-vagrant/ansible/playbooks
+	ansible-playbook iw-play.yml -i hosts --connection=local
 fi
+touch /root/provisioner
+SCRIPT
 #Vagrant File for Centos 7
 Vagrant.configure("2") do |config|
 

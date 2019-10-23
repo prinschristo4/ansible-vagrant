@@ -7,9 +7,6 @@
     },
     {
       "hive-site" : {
-	"ambari.hive.db.schema.name" : "{{ databases.metastore.name }}",
-	"javax.jdo.option.ConnectionURL" : "jdbc:mysql://{{ database_options.external_hostname|default(ansible_fqdn,true) }}/{{ databases.metastore.name }}",
-	"javax.jdo.option.ConnectionDriverName" : "com.mysql.jdbc.Driver",
         "javax.jdo.option.ConnectionUserName" : "{{ databases.metastore.user }}",
         "javax.jdo.option.ConnectionPassword" : "{{ databases.metastore.pass }}"
       }
@@ -32,28 +29,6 @@
       }
     },
 {% endif %}
-    {
-      "hive-env" : {
-	"hive_database" : "Existing MySQL / MariaDB Database",
-	"hive_database_type" : "{{ databases.metastore.type }}",
-	"hive_user" : "{{ databases.metastore.user }}"
-       }
-    },
-    {
-      "oozie-site" : {
-        "oozie.service.JPAService.jdbc.driver": "com.mysql.jdbc.Driver",
-	"oozie.service.JPAService.jdbc.url" : "jdbc:mysql://{{ database_options.external_hostname|default(ansible_fqdn,true) }}/{{ databases.oozie.name }}",
-        "oozie.db.schema.name": "{{ databases.oozie.name }}",
-        "oozie.service.JPAService.jdbc.username": "{{ databases.oozie.user }}",
-        "oozie.service.JPAService.jdbc.password": "{{ databases.oozie.pass }}"
-        }
-    },
-    {
-      "oozie-env" : {
-        "oozie_database": "Existing MySQL / MariaDB Database",
-        "oozie_user" : "{{ databases.oozie.user }}"
-        }
-    },
     {
       "ams-grafana-env" : {
         "metrics_grafana_username" : "{{ ambari['grafana_user'] }}",
@@ -124,6 +99,9 @@
         },
         {
           "name" : "DATANODE"
+        },
+	{
+          "name" : "MYSQL_SERVER"
         },
         {
           "name" : "APP_TIMELINE_SERVER"
