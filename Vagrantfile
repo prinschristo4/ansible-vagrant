@@ -3,7 +3,7 @@ $initscript = <<SCRIPT
 if [ ! -f /root/provisioner ]; then
 	yum install git ansible -y
 	curl -O https://data-viewer-setup.s3.amazonaws.com/jdk-8u161-linux-x64.rpm
-	yum localinstall jdk-8u161-linux-x64.rpm
+	yum localinstall jdk-8u161-linux-x64.rpm -y
 	git clone https://github.com/saikrishnavedaraju/ansible-vagrant.git
 	pushd ansible-vagrant/ansible/playbooks
 	ansible-playbook iw-play.yml -i hosts --connection=local
