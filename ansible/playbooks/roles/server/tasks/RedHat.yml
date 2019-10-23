@@ -8,22 +8,9 @@
 - name: Ensure Ambari Server is Stopped
   service: name=ambari-server state=stopped
 
-- name: Load the Ambari Server mysql schema
-  mysql_db:
-    name: "{{ databases.ambari.name }}"
-    login_host: "{{ database_options.external_hostname|default(ansible_fqdn,true) }}"
-    login_port: "{{ mysql_port }}"
-    login_user: "{{ databases.ambari.user }}"
-    login_password: "{{ databases.ambari.pass }}"
-    state: import
-    target: /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
-  register: import_results
-
 - name: Configure Ambari-Server
-  shell: ambari-server setup --java-home={{ java_path }} --database={{ databases.ambari.type }} --databasehost={{ ansible_fqdn }} --databaseport=3306 --databasename={{ databases.ambari.name }} --databaseusername={{ databases.ambari.user }} --databasepassword={{ databases.ambari.pass }} -s > /tmp/ambari-install-output
-
-- name: Configure JDBC Driver
-  command: ambari-server setup --jdbc-db=mysql --jdbc-driver={{ mysql_jdbc_path }}
+  #shell: ambari-server setup --java-home={{ java_path }} --database={{ databases.ambari.type }} --databasehost={{ ansible_fqdn }} --databaseport=3306 --databasename={{ databases.ambari.name }} --databaseusername={{ databases.ambari.user }} --databasepassword={{ databases.ambari.pass }} -s > /tmp/ambari-install-output
+  shell: ambari-server setup --java-home={{ java_path }} -s > /tmp/ambari-install-output
 
 
 - name: Check if Ambari-Server is Configured Successfully
