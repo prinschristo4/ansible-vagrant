@@ -1,0 +1,64 @@
+---
+- name: Load Variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  
+- name: Ensure Ambari Server is installed on RHEL/Centos
+  apt:  name=ambari-server state=latest
+  notify: Stop Ambari Server
+
+#- name: Ensure Ambari Server is Stopped
+#  service: name=ambari-server state=stopped
+
+- name: Configure MYsql Schema
+  shell: mysql -u{{ databases.ambari.user }} -p{{ databases.ambari.pass }} {{ databases.ambari.name }} <  /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql 2>&1 > /dev/null
+
+- name: Configure Ambari-Server
+  shell: ambari-server setup --java-home={{ java_path }} --database={{ databases.ambari.type }} --databasehost={{ ansible_fqdn }} --databaseport=3306 --databasename={{ databases.ambari.name }} --databaseusername={{ databases.ambari.user }} --databasepassword={{ databases.ambari.pass }} -s > /tmp/ambari-install-output
+
+- name: Configure JDBC Driver
+  command: ambari-server setup --jdbc-db=mysql --jdbc-driver={{ mysql_jdbc_path }}
+
+
+- name: Check if Ambari-Server is Configured Successfully
+  wait_for : path=/tmp/ambari-install-output search_regex="completed successfully"
+#  notify: Reload Ambari-Server
+
+- name: Start Ambari and Enable at boot
+  service: name=ambari-server state=restarted enabled=yes
+
+- name: Check if Ambari-Server is up
+  wait_for : host=127.0.0.1 port=8080 delay=10
+
+- name: Print debug
+  debug: msg="Calling http://{{ ansible_fqdn }}:8080/api/v1/hosts/{{ hostvars[item]['ansible_fqdn'] | lower }}"
+  with_items: "{{ groups['all'] }}"
+
+- name: Waiting for ambari-agents to register (Test)
+  uri: url="http://{{ ansible_fqdn }}:8080/api/v1/hosts/{{ hostvars[item]['ansible_fqdn'] | lower }}"
+       method=GET
+       force_basic_auth=yes
+       user=admin
+       password=admin
+       HEADER_X-Requested-By="ambari"
+       status_code=200,201,202,404
+  with_items: "{{ groups['all'] }}"
+  register: result
+  retries: 10
+  delay: 2
+
+- debug: msg="Response is {{result}}"
+
+- name: Waiting for ambari-agents to register
+  uri: url="http://{{ ansible_fqdn }}:8080/api/v1/hosts/{{ hostvars[item]['ansible_fqdn'] | lower }}"
+       method=GET
+       force_basic_auth=yes
+       user=admin
+       password=admin
+       HEADER_X-Requested-By="ambari"
+       status_code=200,201,202,404
+  with_items: "{{ groups['all'] }}"
+  register: result
+  until: "result.status != 404"
+  retries: 10
+  delay: 2
+

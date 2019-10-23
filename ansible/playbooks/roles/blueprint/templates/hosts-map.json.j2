@@ -1,0 +1,28 @@
+{
+  "blueprint": "{{ blueprint_name }}",
+  "repository_version": "{{ ambari.vdf_version }}",
+  "default_password": "{{ ambari_admin_default_password }}",
+{% if security|lower != "none" %}
+  "credentials" : [
+    {
+      "alias" : "kdc.admin.credential",
+      "principal" : "{{ security_options.admin_principal }}/admin@{{ security_options.realm | upper }}",
+      "key" : "{{ security_options.admin_password }}",
+      "type" : "TEMPORARY"
+    }
+  ],
+  "security" : {
+    "type" : "KERBEROS"
+  },
+{% endif %}
+  "host_groups": [
+    {
+      "name": "host_group_1",
+      "hosts": [
+        {
+          "fqdn": "{{ hostvars[groups['local'][0]]['ansible_fqdn'] }}"
+        }
+      ]
+    }
+  ]
+}

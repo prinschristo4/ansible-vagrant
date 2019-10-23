@@ -1,0 +1,18 @@
+---
+
+databases:
+  ambari:
+    name: 'ambari'
+    user: 'ambari'
+    pass: 'IN11**rk'
+    type: 'mysql'
+  metastore:
+    name: 'metastore'
+    user: 'hive'
+    pass: 'IN11**rk'
+    type: 'mysql'
+  oozie:
+    name: 'oozie'
+    user: 'oozie'
+    pass: 'IN11**rk'
+    type: 'mysql'

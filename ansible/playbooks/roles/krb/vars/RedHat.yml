@@ -1,0 +1,13 @@
+---
+kdc_packages:
+  - krb5-server
+  - krb5-libs
+  - krb5-workstation
+
+krb5_kdc_master_passwd: IN11**rk
+krb5_kdc_admin_user: "admin/admin@{{ security_options.realm | upper }}"
+krb5_kdc_admin_passwd: IN11**rk
+
+restart_kdc_packages:
+  - krb5kdc
+  - kadmin

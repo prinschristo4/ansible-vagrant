@@ -1,0 +1,12 @@
+---
+java_path: /usr/java/default
+
+mysql_jdbc_path: /usr/share/java/mysql-connector-java.jar
+mysql_port: 3306
+
+databases:
+  ambari:
+    name: 'ambari'
+    user: 'ambari'
+    pass: 'IN11**rk'
+    type: 'mysql'

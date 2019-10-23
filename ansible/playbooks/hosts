@@ -1,0 +1,12 @@
+[local]
+vagrant.localdomain
+
+[local:vars]
+ansible_connection=local
+
+
+## don't touch the rest of this unless you know what you're doing!
+
+
+[all:children]
+local

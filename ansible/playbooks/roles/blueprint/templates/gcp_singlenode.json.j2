@@ -1,0 +1,155 @@
+{
+  "configurations" : [
+    {
+      "hdfs-site" : {
+        "dfs.replication" : "1"
+      }
+    },
+    {
+      "hive-site" : {
+	"ambari.hive.db.schema.name" : "{{ databases.metastore.name }}",
+	"javax.jdo.option.ConnectionURL" : "jdbc:mysql://{{ database_options.external_hostname|default(ansible_fqdn,true) }}/{{ databases.metastore.name }}",
+	"javax.jdo.option.ConnectionDriverName" : "com.mysql.jdbc.Driver",
+        "javax.jdo.option.ConnectionUserName" : "{{ databases.metastore.user }}",
+        "javax.jdo.option.ConnectionPassword" : "{{ databases.metastore.pass }}"
+      }
+    },
+{% if security|lower != "none" %}
+    {
+      "kerberos-env" : {
+	"manage_identities": "true",
+        "install_packages": "true",
+        "realm" : "{{ security_options.realm|upper }}",
+        "kdc_type" : "{{ security }}",
+	"kdc_hosts" : "{{ security_options.external_hostname|default(ansible_fqdn,true) }}",
+        "admin_server_host" : "{{ security_options.external_hostname|default(ansible_fqdn,true) }}"
+      }
+    },
+    {
+      "krb5-conf": {
+          "domains" : ".{{ security_options.realm|lower }},{{ security_options.realm|lower }}",
+          "manage_krb5_conf" : "true"
+      }
+    },
+{% endif %}
+    {
+      "hive-env" : {
+	"hive_database" : "Existing MySQL / MariaDB Database",
+	"hive_database_type" : "{{ databases.metastore.type }}",
+	"hive_user" : "{{ databases.metastore.user }}"
+       }
+    },
+    {
+      "oozie-site" : {
+        "oozie.service.JPAService.jdbc.driver": "com.mysql.jdbc.Driver",
+	"oozie.service.JPAService.jdbc.url" : "jdbc:mysql://{{ database_options.external_hostname|default(ansible_fqdn,true) }}/{{ databases.oozie.name }}",
+        "oozie.db.schema.name": "{{ databases.oozie.name }}",
+        "oozie.service.JPAService.jdbc.username": "{{ databases.oozie.user }}",
+        "oozie.service.JPAService.jdbc.password": "{{ databases.oozie.pass }}"
+        }
+    },
+    {
+      "oozie-env" : {
+        "oozie_database": "Existing MySQL / MariaDB Database",
+        "oozie_user" : "{{ databases.oozie.user }}"
+        }
+    },
+    {
+      "ams-grafana-env" : {
+        "metrics_grafana_username" : "{{ ambari['grafana_user'] }}",
+        "metrics_grafana_password" : "{{ ambari['grafana_pass'] }}"
+      }
+    },
+    {
+      "ams-grafana-ini" : {
+        "properties" : {
+          "port" : "4000"
+         }
+      }
+    }
+  ],
+
+  "host_groups" : [
+    {
+      "components" : [
+        {
+          "name" : "NODEMANAGER"
+        },
+        {
+          "name" : "HIVE_SERVER"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "HIVE_METASTORE"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "HCAT"
+        },
+        {
+          "name" : "WEBHCAT_SERVER"
+        },
+{% if security|lower != "none" %}
+        {
+          "name" : "KERBEROS_CLIENT"
+        },
+{% endif %}
+        {
+          "name" : "SECONDARY_NAMENODE"
+        },
+        {
+          "name" : "METRICS_COLLECTOR"
+        },
+        {
+          "name" : "METRICS_GRAFANA"
+        },
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },
+        {
+          "name" : "HISTORYSERVER"
+        },
+        {
+          "name" : "NAMENODE"
+        },
+        {
+          "name" : "AMBARI_SERVER"
+        },
+        {
+          "name" : "DATANODE"
+        },
+        {
+          "name" : "APP_TIMELINE_SERVER"
+        },
+        {
+          "name" : "RESOURCEMANAGER"
+        }
+      ],
+      "configurations" : [ ],
+      "name" : "host_group_1",
+      "cardinality" : "1"
+    }
+  ],
+  "Blueprints" : {
+{% if security|lower != "none" %}
+    "security" : {
+      "type" : "KERBEROS",
+      "kerberos_descriptor" : {
+        "properties" : {
+          "keytab_dir" : "/etc/security/keytabs",
+          "realm" : "{{ security_options.realm }}"
+        }
+    }
+  },
+{% endif %}
+    "stack_name" : "{{ ambari['stack_name'] }}",
+    "stack_version" : "{{ ambari['stack_version'] }}"
+  }
+}

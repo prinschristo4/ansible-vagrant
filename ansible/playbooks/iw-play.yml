@@ -1,0 +1,12 @@
+---
+- name: Install Single Node HDP
+  hosts: local
+  become: yes
+  gather_facts: true
+  roles:
+    - common
+    - {role: krb, when: security != 'none'}
+    - agent
+    - mysql
+    - server
+    - blueprint

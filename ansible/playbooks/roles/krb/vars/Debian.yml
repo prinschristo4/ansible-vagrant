@@ -1,0 +1,14 @@
+---
+kdc_packages:
+  - krb5-kdc
+  - krb5-admin-server
+  - krb5-user
+
+krb5_kdc_master_passwd: IN11**rk
+krb5_kdc_admin_user: "admin/admin@{{ security_options.realm | upper }}"
+krb5_kdc_admin_passwd: IN11**rk
+username: "admin/admin"
+
+restart_kdc_packages:
+  - krb5-kdc
+  - krb5-admin-server

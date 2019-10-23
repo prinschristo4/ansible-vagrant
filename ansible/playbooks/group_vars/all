@@ -1,0 +1,55 @@
+---
+
+ambari_admin_user: 'admin'
+ambari_admin_password: 'admin'
+ambari_admin_default_password: 'admin'
+wait: true
+wait_timeout: 3600
+
+default_password: 'IN11**rk'
+cluster_template_file: 'hosts-map.json.j2'
+vdhfilepath: 'vdhfile.j2'
+config_recommendation_strategy: 'NEVER_APPLY'
+blueprint_file: 'gcp_singlenode.json.j2'
+blueprint_name : iwsinglenode
+cluster_name : infoworks
+infoworks_version: 2.4.2
+iw_user: centos
+
+
+database_options:
+  external_hostname: ''  
+
+# paramaters passed to the various ambari roles
+ambari:
+
+  #blueprint_name: "{{ ambari['cluster_name'] }}_blueprint"
+  # ambari API vars
+  stack_name : HDP
+  stack_version : 2.6
+  hdp_mini_version : 2.6.5.0
+  ambari_mini_version : 2.6.1.5
+  vdf_version : 2.6.5.0-292
+#  infoworks_version : 2.2.0
+
+
+  # hadoop configuration
+  default_password : hadoop
+  data_dir : /mnt/disks/sdb/data 
+  grafana_user : admin
+  grafana_pass : admin
+  
+# don't touch this unless you know what you're doing
+  ambari_server: "{{ hostvars[groups['local'][0]]['ansible_fqdn'] }}"
+
+
+security: 'none'                                          # can be set to 'none', 'mit-kdc' or 'active-directory'
+security_options:
+  external_hostname: ''						#iw-dev-master-1.c.infoworks-internal.internal                                  # if this is empty, Ansible will install and prepare the MIT KDC on the Ambari node
+  realm: 'COMPUTE-1.AMAZONAWS.COM'
+  admin_principal: 'admin'                                # the Kerberos principal that has the permissions to create new users (don't append the realm)
+  admin_password: 'IN11**rk'
+  kdc_master_key: 'IN11**rk'                             # only used when security is set to 'mit-kdc'
+  container_dn: 'OU=engineering,DC=infoworks,DC=io'             # only used when security is set to 'active-directory'
+  http_authentication: no                                 # set to yes to enable HTTP authentication (SPNEGO)
+####################

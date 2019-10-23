@@ -1,0 +1,20 @@
+---
+- name: install ambari-agent
+  package: name=ambari-agent state=latest
+
+- name: install ambari-server
+  package: name=ambari-server state=latest
+
+- name: Configure ambari-server hostname in ambari-agent configuration
+  lineinfile: dest=/etc/ambari-agent/conf/ambari-agent.ini regexp=^.*hostname=.*$ line=hostname={{ ansible_fqdn }} backup=yes
+
+- name: Forcing HTTPS SSL encryption
+  shell: sed -i "/credential_shell_cmd/a force_https_protocol=PROTOCOL_TLSv1_2" /etc/ambari-agent/conf/ambari-agent.ini
+  when: (ansible_distribution_major_version == '7')
+
+#- name: Disable TLS v1.2
+#  shell: jdk-8u161-linux
+#  when: (ansible_distribution_major_version == '6')
+
+- name: Restart Ambari Agent
+  service: name=ambari-agent state=restarted enabled=yes

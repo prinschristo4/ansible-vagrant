@@ -1,0 +1,49 @@
+---
+- name: Stop and Disable Firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no 
+  when: (ansible_distribution_major_version == '7')
+  ignore_errors: true
+
+- name: Stop and Disabled IPTables
+  service:
+    name: iptables
+    state: stopped
+    enabled: no
+  when: (ansible_distribution_major_version == '6')
+
+- name: Install Basic Softwares
+  yum:
+    name: "{{ item }}"
+    update_cache: yes
+    state: installed
+  with_items:
+    - ntp
+    - wget
+    - unzip
+
+- name: NTP update
+  shell: ntpdate pool.ntp.org
+  ignore_errors: true
+
+- name: Ensure NTPD Enabled and started
+  service:
+    name: ntpd
+    state: restarted
+    enabled: yes
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Download HDP Repo
+  get_url: url=http://public-repo-1.hortonworks.com/HDP/centos{{ ansible_distribution_major_version }}/2.x/updates/{{ ambari['hdp_mini_version'] }}/hdp.repo dest=/etc/yum.repos.d/hdp.repo
+
+- name: Download Ambari Repo
+  get_url: url=http://public-repo-1.hortonworks.com/ambari/centos{{ ansible_distribution_major_version }}/2.x/updates/{{ ambari['ambari_mini_version'] }}/ambari.repo dest=/etc/yum.repos.d/ambari.repo
+
+
+- name: Update Repo and Update Packages
+  shell: yum repolist
