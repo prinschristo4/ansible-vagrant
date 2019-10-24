@@ -6,6 +6,7 @@
   roles:
     - common
     - {role: krb, when: security != 'none'}
+    - mysql
     - agent
     - server
     - blueprint
