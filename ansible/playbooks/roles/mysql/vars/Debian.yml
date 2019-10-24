@@ -1,0 +1,12 @@
+---
+
+mysql_pkgs:
+  - python-selinux
+  - mysql-server
+  - python-mysqldb
+  - ambari-server
+  - libmysql-java
+
+mysql_service: mysql
+
+mysql_root_password: IN11**rk

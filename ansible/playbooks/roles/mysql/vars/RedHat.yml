@@ -1,0 +1,10 @@
+---
+mysql_pkgs:
+  - libselinux-python
+  - mysql-server
+  - MySQL-python
+  - mysql-connector-java
+
+mysql_service: mysqld
+
+mysql_root_password: 'IN11**rk'
